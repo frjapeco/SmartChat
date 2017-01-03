@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html ng-app="smartchat"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Smartconversation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/smartchat.css}"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.3.2/ui-bootstrap-tpls.min.js"></script>
+    <script src="https://cdn.rawgit.com/Luegg/angularjs-scroll-glue/master/src/scrollglue.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/services.js"></script>
+</head>
+<body ng-controller="IndexController" ng-init="init()">
+    <div ng-show="loading">
+        <p>Loading...</p>
+    </div>
+    <div class="container-fluid" ng-show="!loading">
+        <div id="sidebar" class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="panel panel-default">
+                <div id="main-menu" class="panel-heading" uib-dropdown="uib-dropdown">
+                    <a uib-dropdown-toggle="uib-dropdown-toggle" href="#!">
+                        <span class="glyphicon glyphicon-user"></span> {{me}} <span class="caret"></span>
+                    </a>
+                    <ul uib-dropdown-menu="uib-dropdown-menu">
+                        <li>
+                            <a th:href="@{/login?logout}">
+                                <span class="mdi mdi-logout"></span> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <ul id="conversations" class="list-group">
+                        <li ng-repeat="conversation in conversations"
+                            class="list-group-item"
+                            ng-class="{'list-group-item-warning': conversation.name == $parent.current}">
+                            <label>
+                                <span ng-switch="conversation.online">
+                                    <span ng-switch-when="true">
+                                        <span class="glyphicon glyphicon-stop"></span>
+                                    </span>
+                                    <span ng-switch-when="false">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </span>
+                                </span>
+                                <input type="radio"
+                                       name="conversation-option"
+                                       ng-model="$parent.current"
+                                       ng-value="conversation.name"
+                                       ng-change="($parent.conversations | findByName: $parent.current).pendingMessages = 0"/>
+                                <span>{{conversation.name | truncate: 15}}</span>
+                            </label>
+                            <span class="badge"
+                                  ng-show="conversation.pendingMessages > 0">
+                                    {{conversation.pendingMessages}}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="content" class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div id="conversation" scroll-glue="true">
+                <div ng-repeat="message in (conversations | findByName: current).messages">
+                    <strong class="message-sender">
+                        [ {{message.sender}} at {{message.timestamp | date: 'HH:mm:ss'}} ]
+                    </strong>
+                    <p class="message-content">{{message.content}}</p>
+                </div>
+            </div>
+            <input id="outbound-message"
+                   type="text"
+                   ng-model="message"
+                   class="form-control"
+                   ng-keypress="readKey($event)"
+                   ng-disabled="!(conversations | findByName: current).online"/>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+body {
+    height: 100vh;
+}
+
+#sidebar .panel-body {
+    max-height: 20em;
+    overflow-y: auto;
+}
+
+#conversations .badge {
+    background-color: #d9534f;
+}
+
+#conversations li label {
+    cursor: pointer;
+}
+
+#conversations li .glyphicon-stop {
+    color: green;
+}
+
+#conversations li .glyphicon-remove {
+    color: gray;
+}
+
+#conversations li label input[type=radio] {
+    display: none;
+}
+
+#content {
+    height: 100vh;
+    background-color: gray;
+    color: white;
+}
+
+#outbound-message {
+    color: black;
+}
+
+#conversation {
+    color: gray;
+    height: 85vh;
+    overflow-y: auto;
+}
+
+#conversation .message-sender {
+    color: #5bc0de;
+}
+
+#conversation .message-content {
+    color: white;
+}
